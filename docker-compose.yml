@@ -1,0 +1,20 @@
+name: public-domain-audio-books
+
+services:
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:${PDAB_PORT:-8220}:8080"
+    environment:
+      SITE_URL: ${SITE_URL:-http://localhost:8220}
+      SITE_NAME: ${SITE_NAME:-Public Domain Audio Books}
+      MEDIA_BASE_URL: ${MEDIA_BASE_URL:-}
+    volumes:
+      # The book files: this repository's content folder unless CONTENT_FOLDER names another.
+      - ${CONTENT_FOLDER:-./content}:/content:ro
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped

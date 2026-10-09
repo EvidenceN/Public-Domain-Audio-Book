@@ -1,0 +1,57 @@
+@page "/books"
+@inject Library Library
+@inject SiteSettings Site
+
+<PageTitle>Books · @Site.Name</PageTitle>
+
+<PageHeader Title="Books" Description="Every recording, newest first. Search by title or author, or pick a kind of book." Meta="@Count" />
+
+<form action="/books" method="get" role="search">
+    <Cluster Align="LayoutAlign.End">
+        <label>
+            <span class="sr-only">Search by title or author</span>
+            <Input name="q" Type="InputType.Search" Value="@Q" Placeholder="Title or author" />
+        </label>
+        @if (Genre is not null) { <input type="hidden" name="genre" value="@Genre" /> }
+        <Button Type="ButtonType.Submit">Search</Button>
+    </Cluster>
+</form>
+
+@if (Genres.Count > 0)
+{
+    <FacetChips Label="Kind of book" ClearHref="@(Genre is null ? null : "/books")">
+        <FacetChip Href="/books" Active="@(Genre is null)" Count="@Library.Books.Count">All</FacetChip>
+        @foreach (var (genre, count) in Genres)
+        {
+            <FacetChip Href="@($"/books?genre={Uri.EscapeDataString(genre)}")" Active="@(Genre == genre)" Count="@count">@genre</FacetChip>
+        }
+    </FacetChips>
+}
+
+@if (Library.Books.Count == 0)
+{
+    <EmptyState Title="No books yet" Description="Nothing has been published yet. When the first recordings are ready they are listed here." />
+}
+else if (Found.Count == 0)
+{
+    <EmptyState Title="@($"No book matches “{Q ?? Genre}”")">
+        <ChildContent>Check the spelling, or <a href="/books">see all the books</a>.</ChildContent>
+    </EmptyState>
+}
+else
+{
+    <BookGrid Books="@Found" />
+}
+
+@code {
+    private RenderFragment Count => @<span>@Library.Books.Count @(Library.Books.Count == 1 ? "book" : "books")</span>;
+
+    [SupplyParameterFromQuery(Name = "q")] public string? Q { get; set; }
+    [SupplyParameterFromQuery(Name = "genre")] public string? Genre { get; set; }
+
+    private List<(string Genre, int Count)> Genres => [.. Library.Books.SelectMany(b => b.Genres).GroupBy(g => g).OrderByDescending(g => g.Count()).ThenBy(g => g.Key).Select(g => (g.Key, g.Count()))];
+
+    private List<Book> Found => [.. Library.Books
+        .Where(b => Genre is null || b.Genres.Contains(Genre, StringComparer.OrdinalIgnoreCase))
+        .Where(b => string.IsNullOrWhiteSpace(Q) || b.Title.Contains(Q.Trim(), StringComparison.OrdinalIgnoreCase) || b.Author.Contains(Q.Trim(), StringComparison.OrdinalIgnoreCase))];
+}

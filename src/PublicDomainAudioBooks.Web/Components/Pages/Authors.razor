@@ -1,0 +1,43 @@
+@page "/authors"
+@page "/authors/{Slug}"
+@inject Library Library
+@inject SiteSettings Site
+
+@if (Slug is null)
+{
+    <PageTitle>Authors · @Site.Name</PageTitle>
+    <PageHeader Title="Authors" Description="Everyone whose books are recorded here." />
+    @if (!Library.Authors.Any())
+    {
+        <EmptyState Title="No authors yet" Description="Authors are listed here once their first book is published." />
+    }
+    else
+    {
+        <ListCard Title="A to Z">
+            @foreach (var author in Library.Authors)
+            {
+                <ListRow Title="@author.Key" Href="@($"authors/{Library.Slug(author.Key)}")" Description="@($"{author.Count()} {(author.Count() == 1 ? "book" : "books")}")" />
+            }
+        </ListCard>
+    }
+}
+else if (Books.Count == 0)
+{
+    <PageTitle>Not found · @Site.Name</PageTitle>
+    <EmptyState Title="No books by that author here">
+        <ChildContent><a href="/authors">See all the authors</a>.</ChildContent>
+    </EmptyState>
+}
+else
+{
+    <PageTitle>@Books[0].Author · @Site.Name</PageTitle>
+    <PageHeader Title="@Books[0].Author" Eyebrow="Author" BackHref="/authors" BackLabel="All authors" Meta="@Count" />
+    <BookGrid Books="@Books" Label="@($"Books by {Books[0].Author}")" />
+}
+
+@code {
+    private RenderFragment Count => @<span>@Books.Count @(Books.Count == 1 ? "book" : "books")</span>;
+
+    [Parameter] public string? Slug { get; set; }
+    private List<Book> Books => [.. Library.Books.Where(b => b.AuthorSlug == Slug)];
+}

@@ -1,0 +1,7 @@
+/* Our own CSS comes last and is nearly empty on purpose: pages are built from NeoUI Extra's components and utilities
+   (docs/UI.md). What is here is only what the library has no component for yet; each rule is a gap recorded in
+   docs/UI.md so it can be added there. */
+@layer app {
+    /* The browser's own audio player, full width (gap: no audio-player component in NeoUI Extra). */
+    audio { width: 100%; }
+}

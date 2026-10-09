@@ -1,0 +1,34 @@
+@page "/"
+@inject Library Library
+@inject SiteSettings Site
+
+<PageTitle>@Site.Name</PageTitle>
+<HeadContent><meta name="description" content="Books in the public domain, read aloud in full, chapter by chapter. Free to listen to here, as a podcast and on YouTube." /></HeadContent>
+
+<Hero Eyebrow="Free to listen · chapter by chapter" Title="Classic books," TitleAccent="read aloud in full."
+      Lead="Every book here is in the public domain. Listen on this site, in your podcast app or on YouTube, from the first chapter to the last."
+      Note="No sign-up. No abridgements.">
+    <Actions>
+        <LinkButton Href="/books" Size="ButtonSize.Large">Browse the books</LinkButton>
+        <LinkButton Href="/about" Size="ButtonSize.Large" Variant="ButtonVariant.Outline">How they are made</LinkButton>
+    </Actions>
+</Hero>
+
+<Section Title="Latest books" Description="The most recently added recordings.">
+    @if (Library.Books.Count == 0)
+    {
+        <EmptyState Title="The first books are on their way" Description="Nothing has been published yet. When the first recordings are ready they appear here, newest first." />
+    }
+    else
+    {
+        <BookGrid Books="@Library.Books.Take(8).ToList()" Label="Latest books" />
+    }
+</Section>
+
+<Section Title="How it works">
+    <AutoGrid MinItemWidth="AutoGridItemWidth.Sm">
+        <Callout Title="The text is public domain" ShowIcon="false"><p>Each book's page says why it is free to use and which edition was read.</p></Callout>
+        <Callout Title="Read in full" ShowIcon="false"><p>Whole books, one recording a chapter, so you can stop and pick up where you left off.</p></Callout>
+        <Callout Title="Checked against the text" ShowIcon="false"><p>A synthetic voice reads; every sentence is listened to and compared with the page before it is published.</p></Callout>
+    </AutoGrid>
+</Section>

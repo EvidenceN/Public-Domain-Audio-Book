@@ -1,0 +1,31 @@
+@page "/about"
+@inject SiteSettings Site
+
+<PageTitle>About · @Site.Name</PageTitle>
+
+<PageHeader Title="About these recordings" Description="What is here, why it is free, and how it is made." />
+
+<Section Title="What this is" Level="2">
+    <Prose>
+        <p>@Site.Name is a library of books that are in the public domain, read aloud in full. Each book is recorded chapter by chapter. You can listen on this site, follow the <a href="/feeds/podcast.xml">podcast feed</a> in any podcast app, or watch on YouTube.</p>
+    </Prose>
+</Section>
+
+<Section Title="What public domain means" Level="2" id="public-domain">
+    <Prose>
+        <p>A book in the public domain is no longer under copyright, so anyone may read it aloud, record it and share it. In the United States that covers, among others, books first published long enough ago. Each book's page says why that book qualifies and when that was checked.</p>
+        <p>Two cautions. First, the rule is the United States'. Other countries count differently, often from the year the author died, so a book that is free there may not be free where you are. Second, only the text that is public domain is read. A later translation, an introduction, notes or illustrations can still be under copyright; when an edition has them they are left out, and the book's page says so.</p>
+    </Prose>
+</Section>
+
+<Section Title="How the recordings are made" Level="2">
+    <Prose>
+        <p>The books are read by a synthetic voice, not a person. Every sentence that is spoken is listened to and compared, word for word, with the text; a passage with a word said wrong is spoken again before the chapter is published. If you hear a mistake anyway, it is a fault we want to know about.</p>
+    </Prose>
+</Section>
+
+<Section Title="Where the texts come from" Level="2">
+    <Prose>
+        <p>Each book's page links to the source of its text. We are grateful to the volunteers who transcribe and proofread public-domain books and share them freely. This site is not connected with, sponsored or endorsed by any of those sources.</p>
+    </Prose>
+</Section>
