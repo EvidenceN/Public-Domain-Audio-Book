@@ -1,0 +1,41 @@
+@inherits LayoutComponentBase
+@inject SiteSettings Site
+
+<NeoShell>
+    <SiteHeader>
+        <Brand><a href="/">@Site.Name</a></Brand>
+        <Nav>
+            <SiteHeaderLink Href="books">Books</SiteHeaderLink>
+            <SiteHeaderLink Href="authors">Authors</SiteHeaderLink>
+            <SiteHeaderLink Href="about">About</SiteHeaderLink>
+        </Nav>
+        <Actions><ThemeToggle /></Actions>
+    </SiteHeader>
+
+    <Container As="main" Class="pb-16">
+        <Stack Gap="Space.Xl">
+            @Body
+        </Stack>
+    </Container>
+
+    <SiteFooter>
+        <Columns>
+            <SiteFooterColumn Title="Listen">
+                <SiteFooterLink Href="books">All books</SiteFooterLink>
+                <SiteFooterLink Href="authors">Authors</SiteFooterLink>
+                <SiteFooterLink Href="feeds/podcast.xml">Podcast feed</SiteFooterLink>
+            </SiteFooterColumn>
+            <SiteFooterColumn Title="About">
+                <SiteFooterLink Href="about">How the recordings are made</SiteFooterLink>
+                <SiteFooterLink Href="about#public-domain">What public domain means</SiteFooterLink>
+            </SiteFooterColumn>
+        </Columns>
+        <Aside>
+            <p>Every book here is in the public domain in the United States. Each book's page says why, and where its text came from. If you are elsewhere, your country's rules may differ.</p>
+        </Aside>
+        <Legal>
+            <span>@Site.Name</span>
+            <span>Read by a synthetic voice, checked word for word against the text.</span>
+        </Legal>
+    </SiteFooter>
+</NeoShell>

@@ -1,0 +1,90 @@
+@page "/books/{Slug}"
+@inject Library Library
+@inject SiteSettings Site
+@inject NavigationManager Nav
+
+@if (_book is null)
+{
+    <PageTitle>Not found · @Site.Name</PageTitle>
+    <EmptyState Title="That book is not here">
+        <ChildContent>It may not be published yet. <a href="/books">See all the books</a>.</ChildContent>
+    </EmptyState>
+}
+else
+{
+    <PageTitle>@_book.Title by @_book.Author · @Site.Name</PageTitle>
+    <HeadContent><meta name="description" content="@($"{_book.Title} by {_book.Author}, read aloud in full. {_book.Excerpt}")" /></HeadContent>
+
+    <PageHeader Title="@_book.Title" Eyebrow="Audio book" BackHref="/books" BackLabel="All books" Meta="@Facts" />
+
+    <SplitLayout>
+        <ChildContent>
+            <Stack Gap="Space.Lg">
+                @if (_book.YoutubeId is not null)
+                {
+                    <iframe class="aspect-video w-full rounded-lg" src="@($"https://www.youtube-nocookie.com/embed/{_book.YoutubeId}")" title="@($"{_book.Title}, the whole book")" loading="lazy" allowfullscreen></iframe>
+                }
+                <Prose Html="@_book.DescriptionHtml" />
+
+                <Section Title="@(_book.Chapters.Count == 1 ? "Listen" : "Chapters")" Level="2">
+                    <Stack As="ol" Gap="Space.Md">
+                        @foreach (var chapter in _book.Chapters.OrderBy(c => c.Number))
+                        {
+                            <li id="@($"chapter-{chapter.Number}")">
+                                <Stack Gap="Space.Sm">
+                                    <Cluster Justify="LayoutJustify.Between">
+                                        <h3 class="font-medium">@chapter.Title</h3>
+                                        <span class="text-sm text-muted-foreground">@Library.Length(chapter.Seconds)</span>
+                                    </Cluster>
+                                    <audio controls preload="none" src="@Library.Media(chapter.Audio)">
+                                        <a href="@Library.Media(chapter.Audio)">Download this chapter</a>
+                                    </audio>
+                                    <Cluster>
+                                        <a class="text-sm" href="@Library.Media(chapter.Audio)" download>Download</a>
+                                        @if (chapter.YoutubeId is not null) { <a class="text-sm" href="@($"https://www.youtube.com/watch?v={chapter.YoutubeId}")" rel="noopener">Watch on YouTube</a> }
+                                    </Cluster>
+                                </Stack>
+                            </li>
+                        }
+                    </Stack>
+                </Section>
+            </Stack>
+        </ChildContent>
+        <Aside>
+            <Stack Gap="Space.Lg">
+                <CoverFallback Title="@_book.Title" Src="@Library.Media(_book.Cover)" HueKey="@_book.Slug" Aspect="CoverFallbackAspect.Portrait" Alt="" Eager="true" />
+                <DescriptionList>
+                    <DescriptionItem Term="Author"><a href="@($"authors/{_book.AuthorSlug}")">@_book.Author</a></DescriptionItem>
+                    @if (_book.Year is { } published) { <DescriptionItem Term="First published">@published</DescriptionItem> }
+                    <DescriptionItem Term="Length">@Library.Length(_book.Seconds), @_book.Chapters.Count @(_book.Chapters.Count == 1 ? "part" : "chapters")</DescriptionItem>
+                    <DescriptionItem Term="Read by">@(_book.Narrator ?? "A synthetic voice")</DescriptionItem>
+                    @if (_book.Edition is not null) { <DescriptionItem Term="Edition read">@_book.Edition</DescriptionItem> }
+                    <DescriptionItem Term="Source text"><a href="@_book.SourceUrl" rel="noopener">Where the text came from</a></DescriptionItem>
+                </DescriptionList>
+                <Callout Title="Public domain in the United States" Tone="Tone.Success" id="public-domain">
+                    <p>@_book.PublicDomain.Basis. Checked @_book.PublicDomain.Checked.</p>
+                    @if (_book.PublicDomain.Excluded is not null) { <p>Not part of this recording: @_book.PublicDomain.Excluded</p> }
+                    <p>Outside the United States the rules may differ. <a href="/about#public-domain">What this means</a>.</p>
+                </Callout>
+            </Stack>
+        </Aside>
+    </SplitLayout>
+}
+
+@code {
+    [Parameter] public string Slug { get; set; } = "";
+    [CascadingParameter] private HttpContext? Http { get; set; }
+    private Book? _book;
+
+    private RenderFragment Facts => @<text>
+        <a href="@($"authors/{_book!.AuthorSlug}")">@_book.Author</a>
+        @if (_book.Year is { } year) { <span>first published @year</span> }
+        <span>@Library.Length(_book.Seconds)</span>
+    </text>;
+
+    protected override void OnParametersSet()
+    {
+        _book = Library.Find(Slug);
+        if (_book is null && Http is not null) Http.Response.StatusCode = 404;
+    }
+}

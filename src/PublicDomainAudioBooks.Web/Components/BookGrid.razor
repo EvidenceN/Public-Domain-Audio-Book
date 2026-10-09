@@ -1,0 +1,19 @@
+@inject Library Library
+
+@* A grid of books as cards: cover (or a generated one from the title), title, author, length. *@
+<AutoGrid As="ul" MinItemWidth="AutoGridItemWidth.Sm" aria-label="@Label">
+    @foreach (var book in Books)
+    {
+        <li>
+            <LinkCard Href="@($"books/{book.Slug}")" Title="@book.Title" Eyebrow="@book.Author" Description="@book.Excerpt"
+                      Meta="@($"{Library.Length(book.Seconds)} · {book.Chapters.Count} {(book.Chapters.Count == 1 ? "part" : "chapters")}")">
+                <Media><CoverFallback Title="@book.Title" Src="@Library.Media(book.Cover)" HueKey="@book.Slug" Alt="" /></Media>
+            </LinkCard>
+        </li>
+    }
+</AutoGrid>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<Book> Books { get; set; } = [];
+    [Parameter] public string Label { get; set; } = "Books";
+}

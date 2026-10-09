@@ -1,0 +1,27 @@
+@inject SiteSettings Site
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <ResourcePreloader />
+    @* NeoUI, then NeoUI Extra, then its utility bundle, then our own (empty on purpose: pages are built from components). *@
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/components.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Extra.Blazor/neoui-extra.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Extra.Blazor/neoui-extra-utilities.css"]" />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="alternate" type="application/rss+xml" title="@Site.Name" href="/feeds/podcast.xml" />
+    <script src="@Assets["_content/NeoUI.Blazor/js/theme.js"]"></script>
+    <ImportMap />
+    <HeadOutlet />
+</head>
+
+<body>
+    <Routes />
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script type="module" src="@Assets["_content/NeoUI.Extra.Blazor/neoui-extra.js"]"></script>
+</body>
+
+</html>
